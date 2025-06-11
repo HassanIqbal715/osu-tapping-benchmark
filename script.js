@@ -1,4 +1,4 @@
-const mainBox = document.querySelector("#main-box")
+const mainBox = document.querySelector("#total-clicks")
 var clicks = 0
 
 document.body.addEventListener("keypress", (e)=> {
