@@ -2,14 +2,21 @@ const totalClicks = document.querySelector("#total-clicks");
 const bpmElement = document.querySelector("#BPM");
 const cpsElement = document.querySelector("#CPS");
 const urElement = document.querySelector("#UR");
-
+const key1Button = document.querySelector("#key-1");
+const key2Button = document.querySelector("#key-2");
+const keySetPrompt = document.querySelector("#key-set-prompt");
 var clicks = 0;
+
 var BPM = 0;
 var CPS = 0.0;
 var UR = 0.0;
 
+var key1 = 'z';
+var key2 = 'x';
 var key1Flag = false;
 var key2Flag = false;
+
+var isFocused = true;
 var stopped = false;
 var started = false;
 
@@ -31,7 +38,7 @@ function reset() {
     lastTime = null;
 
     clearInterval(timer);
-    
+
     totalClicks.textContent = clicks;
     bpmElement.textContent = 0;
     cpsElement.textContent = 0;
@@ -129,11 +136,15 @@ function keyTap() {
 }
 
 document.addEventListener("keydown", (e)=> {
-    if (e.key == 'z' && !key1Flag && !stopped) {
+    if (!isFocused) {
+        return;
+    }
+    
+    if (e.key == key1 && !key1Flag && !stopped) {
         key1Flag = true;
         keyTap();
     }
-    if (e.key == 'x' && !key2Flag && !stopped) {
+    if (e.key == key2 && !key2Flag && !stopped) {
         key2Flag = true;
         keyTap();
     }
@@ -143,10 +154,64 @@ document.addEventListener("keydown", (e)=> {
 });
 
 document.addEventListener("keyup", (e) => {
-    if (e.key == 'z') {
+    if (!isFocused) {
+        return;
+    }
+
+    if (e.key == key1) {
         key1Flag = false;
     }
-    if (e.key == 'x') {
+    if (e.key == key2) {
         key2Flag = false;
+    }
+});
+
+document.addEventListener("click", (e) => {
+    if (!keySetPrompt.contains(e.target) && e.target !== key2Button) {
+        keySetPrompt.style.display = 'none';
+    }
+});
+
+key1Button.addEventListener("click", (e) => {
+    keySetPrompt.style.display = 'block';
+    isFocused = false;
+    e.stopPropagation();
+});
+
+key2Button.addEventListener("click", (e) => {
+    keySetPrompt.style.display = 'block';
+    isFocused = false;
+    e.stopPropagation();
+});
+
+key1Button.addEventListener("keyup", (e) => {
+    if (document.activeElement === key1Button) {
+        if (key2 == e.key) {
+            isFocused = false;
+            return;
+        }
+        if (e.key >= 'a' && e.key <= 'z') {
+            key1 = e.key;
+            key1Button.textContent = key1.toUpperCase();
+            isFocused = true;
+            key1Button.blur();
+            keySetPrompt.style.display = 'none';
+        }
+    }
+});
+
+key2Button.addEventListener("keyup", (e) => {
+    if (document.activeElement === key2Button) {
+        if (key1 == e.key) {
+            isFocused = false;
+            return;
+        }
+        if (e.key >= 'a' && e.key <= 'z') {
+            key2Button.blur();
+            key2 = e.key;
+            key2Button.textContent = key2.toUpperCase();
+            isFocused = true;
+            keySetPrompt.style.display = 'none';
+        }
     }
 });
