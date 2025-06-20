@@ -4,25 +4,36 @@ const cpsElement = document.querySelector("#CPS");
 const urElement = document.querySelector("#UR");
 const key1Button = document.querySelector("#key-1");
 const key2Button = document.querySelector("#key-2");
+const keyRButton = document.querySelector("#key-r");
 const keySetPrompt = document.querySelector("#key-set-prompt");
-var clicks = 0;
+const testButtonTime = document.querySelector("#test-time");
+const testButtonTaps = document.querySelector("#test-taps");
+const timeSection = document.querySelector("#time-section");
+const tapsSection = document.querySelector("#taps-section");
+const timeInput = document.querySelector("#time-box");
+const tapsInput = document.querySelector("#taps-box");
 
+var clicks = 0;
 var BPM = 0;
 var CPS = 0.0;
 var UR = 0.0;
 
 var key1 = 'z';
 var key2 = 'x';
+var keyR = 'r';
+
 var key1Flag = false;
 var key2Flag = false;
-
 var isFocused = true;
 var stopped = false;
 var started = false;
+var canEdit = true;
+var isTimeMode = true;
 
 var timeFactor = 5;
 var timeElapsed = 0.0;
 var targetTime = 5 * timeFactor;
+var targetTaps = 16;
 var timer;
 var lastTime = null;
 var intervals = [];
@@ -32,6 +43,7 @@ function reset() {
     key2Flag = false;
     stopped = false;
     started = false;
+    canEdit = true;
     intervals = [];
     timeElapsed = 0;
     clicks = 0;
@@ -57,7 +69,7 @@ function calculateCPS() {
 }
 
 function calculateUR() {
-    var newArr = intervals.slice(2);
+    var newArr = intervals.slice(1);
     var std = getArraySTD(scaleArray(newArr, 1000));
     urElement.textContent = (std * 10).toFixed(2);
 }
@@ -107,11 +119,8 @@ function scaleArray(arr, factor) {
 }
 
 function countTime() {
-    if (timeElapsed == targetTime - 1) {
+    if (timeElapsed == targetTime - 1 && isTimeMode) {
         clearInterval(timer);
-        console.log(intervals);
-        var avg = getArrayAverage(intervals);
-        console.log(avg);
         stopped = true;
     }
     timeElapsed += 1;
@@ -120,7 +129,17 @@ function countTime() {
     calculateCPS();
 }
 
-function keyTap() {
+function keyTap() { 
+    if (!started) {
+        start();
+    }
+    if (!isTimeMode && clicks == targetTaps - 1) {
+        clearInterval(timer);
+        stopped = true;        
+        calculateUR();
+        calculateBPM();
+        calculateCPS();
+    }
     clicks += 1;
     totalClicks.textContent = clicks;
     const currentTime = performance.now();
@@ -129,9 +148,51 @@ function keyTap() {
         intervals.push(intr);
     }
     lastTime = currentTime;
-    if (!started) {
-        started = true;    
-        timer = setInterval(countTime, 200);
+}
+
+function start() {
+    if (isTimeMode) {
+        if (timeInput.value == '') {
+            targetTime = 5 * timeFactor;
+        }
+        else {
+            targetTime = timeInput.value * timeFactor;
+        }
+    }
+    else {
+        if (tapsInput.value == '') {
+            targetTaps = 16;
+        }
+        else {
+            targetTaps = tapsInput.value;
+        }
+    }
+    if (canEdit) {
+        canEdit = false;
+    }
+    started = true;
+    timer = setInterval(countTime, 200);
+}
+
+function keyButtonClick(e) {
+    keySetPrompt.style.display = 'block';
+    isFocused = false;
+    e.stopPropagation();
+}
+
+function checkIncomingInput(e) {
+    const allowed = [
+        "Backspace", "Tab", "Delete",
+        "ArrowLeft", "ArrowRight", "Home", "End"
+    ];
+
+    if (e.ctrlKey || e.metaKey) return;
+
+    const isNumber = (e.key >= '0' && e.key <= '9');
+    const isAllowed = allowed.includes(e.key);
+
+    if (!isNumber && !isAllowed) {
+        e.preventDefault();
     }
 }
 
@@ -148,7 +209,7 @@ document.addEventListener("keydown", (e)=> {
         key2Flag = true;
         keyTap();
     }
-    if (e.key == 'r') {
+    if (e.key == keyR) {
         reset();
     }
 });
@@ -167,30 +228,32 @@ document.addEventListener("keyup", (e) => {
 });
 
 document.addEventListener("click", (e) => {
-    if (!keySetPrompt.contains(e.target) && e.target !== key2Button) {
+    if (!keySetPrompt.contains(e.target)) {
         keySetPrompt.style.display = 'none';
+        isFocused = true;
     }
 });
 
+// Keys buttons 
 key1Button.addEventListener("click", (e) => {
-    keySetPrompt.style.display = 'block';
-    isFocused = false;
-    e.stopPropagation();
+    keyButtonClick(e);
 });
 
 key2Button.addEventListener("click", (e) => {
-    keySetPrompt.style.display = 'block';
-    isFocused = false;
-    e.stopPropagation();
+    keyButtonClick(e);
+});
+
+keyRButton.addEventListener("click", (e) => {
+    keyButtonClick(e);
 });
 
 key1Button.addEventListener("keyup", (e) => {
     if (document.activeElement === key1Button) {
-        if (key2 == e.key) {
+        if (key2 == e.key || keyR == e.key) {
             isFocused = false;
             return;
         }
-        if (e.key >= 'a' && e.key <= 'z') {
+        if ((e.key >= 'a' && e.key <= 'z') || (e.key >= '0' && e.key <= '9')) {
             key1 = e.key;
             key1Button.textContent = key1.toUpperCase();
             isFocused = true;
@@ -202,11 +265,11 @@ key1Button.addEventListener("keyup", (e) => {
 
 key2Button.addEventListener("keyup", (e) => {
     if (document.activeElement === key2Button) {
-        if (key1 == e.key) {
+        if (key1 == e.key || keyR == e.key) {
             isFocused = false;
             return;
         }
-        if (e.key >= 'a' && e.key <= 'z') {
+        if ((e.key >= 'a' && e.key <= 'z') || (e.key >= '0' && e.key <= '9')) {
             key2Button.blur();
             key2 = e.key;
             key2Button.textContent = key2.toUpperCase();
@@ -214,4 +277,74 @@ key2Button.addEventListener("keyup", (e) => {
             keySetPrompt.style.display = 'none';
         }
     }
+});
+
+keyRButton.addEventListener("keyup", (e) => {
+    if (document.activeElement === keyRButton) {
+        if (key1 == e.key || key2 == e.key) {
+            isFocused = false;
+            return;
+        }
+    }
+    if ((e.key >= 'a' && e.key <= 'z') || (e.key >= '0' && e.key <= '9')) {
+        keyRButton.blur();
+        keyR = e.key;
+        keyRButton.textContent = keyR.toUpperCase();
+        isFocused = true;
+        keySetPrompt.style.display = 'none';
+    }    
+});
+
+// Test buttons
+testButtonTime.addEventListener("click", () => {
+    if (testButtonTime.classList.contains("clicked")) {
+        return;
+    }
+    if (!canEdit) {
+        if (!stopped) {
+            return;
+        }
+    }
+    isTimeMode = true;
+    timeSection.style.display = 'flex';
+    tapsSection.style.display = 'none';
+    testButtonTime.classList.toggle("clicked");
+    testButtonTaps.classList.remove("clicked");
+});
+
+testButtonTaps.addEventListener("click", () => {
+    if (testButtonTaps.classList.contains("clicked")) {
+        return
+    }
+    if (!canEdit) {
+        if (!stopped) {
+            return;
+        }
+    }
+    isTimeMode = false;
+    timeSection.style.display = 'none';
+    tapsSection.style.display = 'flex';
+    testButtonTaps.classList.toggle("clicked");
+    testButtonTime.classList.remove("clicked");
+});
+
+// input boxes
+timeInput.addEventListener("click", ()=> {
+    if (document.activeElement == timeInput) {
+        isFocused = false;
+    }
+});
+
+tapsInput.addEventListener("click", ()=> {
+    if (document.activeElement == tapsInput) {
+        isFocused = false;
+    }
+});
+
+timeInput.addEventListener("keydown", (e) => {
+    checkIncomingInput(e);
+});
+
+tapsInput.addEventListener("keydown", (e) => {
+    checkIncomingInput(e);
 });

@@ -108,3 +108,71 @@ body {
 }
 
 /* Test settings */
+.test-buttons-container {
+    display: flex;
+    justify-content: center;
+    margin: 18px auto 18px auto;
+    gap: 10px;
+}
+
+.test-button {
+    width: 96px;
+    height: 40px;
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+    border: none; 
+    background: none; 
+    position: relative;
+    cursor: pointer;
+}
+
+.test-button::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 2px;
+    width: 100%;
+    background-color: white;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+}
+
+.test-button:hover::after,
+.test-button.clicked::after {
+    transform: scaleX(1);
+}
+
+#time-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#taps-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.input-box {
+    height: 24px;
+    font-size: 18px;
+    margin: 10px auto 10px auto;
+    padding: 4px 8px;
+    text-align: end;
+}
+
+.input-box:focus {
+    text-decoration: none;
+    border: 1px solid black;
+    outline: none;
+}
+
+#taps-section {
+    display: none;
+}

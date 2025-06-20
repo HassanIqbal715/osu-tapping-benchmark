@@ -48,8 +48,16 @@
         <div class="settings-box">
             <h1 class="settings-box-heading">Test Settings</h1>
             <div class="test-buttons-container">
-                <button>Time</button>
-                <button>Taps</button>
+                <button class="test-button clicked" id="test-time">Time</button>
+                <button class="test-button" id="test-taps">Taps</button>
+            </div>
+            <div id="time-section">
+                <p class="settings-box-text">Time</p>
+                <input placeholder="Seconds(Default = 5s)" id="time-box" class="input-box">
+            </div>
+            <div id="taps-section">
+                <p class="settings-box-text">Taps</p>
+                <input placeholder="Taps(Default = 16)" id="taps-box" class="input-box">
             </div>
         </div>
     </div>
