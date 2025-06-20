@@ -14,6 +14,7 @@ var started = false;
 var timeElapsed = 0;
 var targetTime = 5;
 var timer;
+var lastTime = null;
 
 function reset() {
     key1Flag = false;
@@ -29,6 +30,11 @@ function calculateBPM() {
 
 }
 
+function calculateCPS() {
+    CPS = clicks/timeElapsed;
+    console.log(CPS);
+}
+
 function countTime() {
     if (timeElapsed < targetTime - 1) {
         timeElapsed += 1;
@@ -37,6 +43,7 @@ function countTime() {
     else {
         clearInterval(timer);
         console.log("Cleared");
+        calculateCPS();
         stopped = true;
     }
 }
@@ -44,6 +51,12 @@ function countTime() {
 function keyTap() {
     clicks += 1;
     totalClicks.textContent = clicks;
+    const currentTime = performance.now();
+    if (lastTime !== null) {
+        var intr = (currentTime - lastTime)/1000;
+        console.log(intr);
+    }
+    lastTime = currentTime;
     if (!started) {
         started = true;    
         timer = setInterval(countTime, 1000);
