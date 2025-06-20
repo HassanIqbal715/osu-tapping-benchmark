@@ -1,6 +1,7 @@
 const totalClicks = document.querySelector("#total-clicks");
 const bpmElement = document.querySelector("#BPM");
 const cpsElement = document.querySelector("#CPS");
+const urElement = document.querySelector("#UR");
 
 var clicks = 0;
 var BPM = 0;
@@ -32,15 +33,20 @@ function reset() {
 }
 
 function calculateBPM() {
-    var factor = (timeElapsed/timeFactor) / 60;
-    var BPM = clicks / (factor * 4);
-    bpmElement.textContent = BPM.toFixed(2);
+    var minutes = (timeElapsed/timeFactor) / 60;
+    BPM = clicks / (minutes * 4);
+    bpmElement.textContent = BPM.toFixed(0);
+}
+
+function calculateCPS() {
+    CPS = clicks/(timeElapsed/timeFactor);
+    cpsElement.textContent = CPS.toFixed(2);
 }
 
 function getArrayAverage(arr) {
-    if (intervals.length >= 1) {
+    if (arr.length >= 1) {
         var sum = getArraySum(arr);
-        var average = sum/intervals.length;
+        var average = sum/arr.length;
         return average;
     }
     return 0;
@@ -48,17 +54,12 @@ function getArrayAverage(arr) {
 
 function getArraySum(arr) {
     var sum = 0.0;
-    if (intervals.length >= 1) {
-        for (var i = 0; i < intervals.length; i++) {
-            sum += intervals[i];
+    if (arr.length >= 1) {
+        for (var i = 0; i < arr.length; i++) {
+            sum += arr[i];
         }
     }
     return sum;
-}
-
-function calculateCPS() {
-    CPS = clicks/(timeElapsed/timeFactor);
-    cpsElement.textContent = CPS.toFixed(2);
 }
 
 function countTime() {
