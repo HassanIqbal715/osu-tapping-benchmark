@@ -30,6 +30,8 @@ function reset() {
     clicks = 0;
     lastTime = null;
 
+    clearInterval(timer);
+    
     totalClicks.textContent = clicks;
     bpmElement.textContent = 0;
     cpsElement.textContent = 0;
