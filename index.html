@@ -8,32 +8,50 @@
     <script src="script.js" defer></script>
 </head>
 <body>
-    <div id="main-box">
-        <p class="main-box-text">Taps</p>
-        <h1 id="total-clicks" class="main-box-text">0</h1>
-        <div class="main-box-footer">
-            <div class="box">
-                <p class="main-box-text">BPM</p>
-                <p class="main-box-text" id="BPM">0</p>
+    <div class="main-container">
+        <div class="settings-box">
+            <h1 class="settings-box-heading">Key Settings</h1>
+            <h3 class="settings-box-text">Keys</h3>
+            <div class="key-container">
+                <div>
+                    <div class="settings-box-text">Key 1</div>
+                    <button class="key-button" id="key-1">Z</button>
+                </div>
+                <div>
+                    <div class="settings-box-text">Key 2</div>
+                    <button class="key-button" id="key-2">X</button>
+                </div>
             </div>
-            <div class="box">
-                <p class="main-box-text">UR</p>
-                <p class="main-box-text" id="UR">0</p>
+            <p class="settings-box-text">Reset Key</p>
+            <button class="key-button" id="key-r">R</button>
+            <p class="settings-box-text" id="key-set-prompt">Press the key you want 
+                to set or click away to not</p>
+        </div>
+        <div id="main-box">
+            <p class="main-box-text">Taps</p>
+            <h1 id="total-clicks" class="main-box-text">0</h1>
+            <div class="main-box-footer">
+                <div class="box">
+                    <p class="main-box-text">BPM</p>
+                    <p class="main-box-text" id="BPM">0</p>
+                </div>
+                <div class="box">
+                    <p class="main-box-text">UR</p>
+                    <p class="main-box-text" id="UR">0</p>
+                </div>
+                <div class="box">
+                    <p class="main-box-text">CPS</p>
+                    <p class="main-box-text" id="CPS">0</p>
+                </div>
             </div>
-            <div class="box">
-                <p class="main-box-text">CPS</p>
-                <p class="main-box-text" id="CPS">0</p>
+        </div>
+        <div class="settings-box">
+            <h1 class="settings-box-heading">Test Settings</h1>
+            <div class="test-buttons-container">
+                <button>Time</button>
+                <button>Taps</button>
             </div>
         </div>
     </div>
-    <div class="settings-box">
-        <div class="key-container">
-            <button class="key-button" id="key-1">Z</button>
-            <button class="key-button" id="key-2">X</button>
-        </div>
-        <p class="settings-box-text" id="key-set-prompt">Press the key you want 
-            to set or click away to not</p>
-    </div>
-    <p class="note">Press R to reset</p>
 </body>
 </html>
