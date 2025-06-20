@@ -6,6 +6,7 @@ const urElement = document.querySelector("#UR");
 var clicks = 0;
 var BPM = 0;
 var CPS = 0.0;
+var UR = 0.0;
 
 var key1Flag = false;
 var key2Flag = false;
@@ -27,9 +28,12 @@ function reset() {
     intervals = [];
     timeElapsed = 0;
     clicks = 0;
+    lastTime = null;
+
     totalClicks.textContent = clicks;
     bpmElement.textContent = 0;
     cpsElement.textContent = 0;
+    urElement.textContent = 0.00;
 }
 
 function calculateBPM() {
@@ -42,6 +46,14 @@ function calculateCPS() {
     CPS = clicks/(timeElapsed/timeFactor);
     cpsElement.textContent = CPS.toFixed(2);
 }
+
+function calculateUR() {
+    var newArr = intervals.slice(2);
+    var std = getArraySTD(scaleArray(newArr, 1000));
+    urElement.textContent = (std * 10).toFixed(2);
+}
+
+calculateUR();
 
 function getArrayAverage(arr) {
     if (arr.length >= 1) {
@@ -62,6 +74,29 @@ function getArraySum(arr) {
     return sum;
 }
 
+function getArraySTD(arr) {
+    var result = 0.0;
+    if (arr.length >= 2) {
+        var mean = getArrayAverage(arr);
+        var sqDeviationSum = 0.0;
+        var N = arr.length;
+        for (var i = 0; i < N; i++) {
+            sqDeviationSum += Math.pow((arr[i] - mean), 2);
+        }
+        sqDeviationSum /= N;
+        result = Math.sqrt(sqDeviationSum);
+    }
+    return result;
+}
+
+function scaleArray(arr, factor) {
+    var newArr = []
+    for (var i = 0; i < arr.length; i++) {
+        newArr.push(arr[i] * factor);
+    }
+    return newArr;
+}
+
 function countTime() {
     if (timeElapsed == targetTime - 1) {
         clearInterval(timer);
@@ -71,6 +106,7 @@ function countTime() {
         stopped = true;
     }
     timeElapsed += 1;
+    calculateUR();
     calculateBPM();
     calculateCPS();
 }
