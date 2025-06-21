@@ -95,7 +95,7 @@ body {
 }
 
 #key-r {
-    margin: 10px auto 10px auto;
+    margin: 0px auto 10px auto;
 }
 
 .main-container {
@@ -175,4 +175,24 @@ body {
 
 #taps-section {
     display: none;
+}
+
+/* Guidlines */
+#guidelines-button {
+    display: block;
+    background-color: transparent;
+    border: none;
+    margin: 10px auto 10px auto;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.guidelines-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.guidelines-container, p {
+    color: white;
+    text-align: center;
 }

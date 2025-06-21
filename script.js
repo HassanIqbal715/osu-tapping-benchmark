@@ -13,6 +13,10 @@ const tapsSection = document.querySelector("#taps-section");
 const timeInput = document.querySelector("#time-box");
 const tapsInput = document.querySelector("#taps-box");
 const progressBar = document.querySelector("#progress-bar");
+const guideButton= document.querySelector("#guidelines-button");
+const guidelines = document.querySelector("#guidelines");
+const guideline1 = document.querySelector("#guideline-1");
+const guideline2 = document.querySelector("#guideline-2");
 
 var clicks = 0;
 var BPM = 0;
@@ -30,6 +34,7 @@ var stopped = false;
 var started = false;
 var canEdit = true;
 var isTimeMode = true;
+var toggleGuide = true;
 
 var timeFactor = 10;
 var timeElapsed = 0.0;
@@ -143,7 +148,7 @@ function countTime() {
     if (isTimeMode) {
         progressBar.textContent = `
             ${timeElapsed/timeFactor}s/${targetTime/timeFactor}s
-        `
+        `;
     }
     calculateUR();
     calculateBPM();
@@ -294,6 +299,9 @@ key1Button.addEventListener("keyup", (e) => {
         if ((e.key >= 'a' && e.key <= 'z') || (e.key >= '0' && e.key <= '9')) {
             key1 = e.key;
             key1Button.textContent = key1.toUpperCase();
+            guideline1.textContent = `
+                > Press ${key1.toUpperCase()} or ${key2.toUpperCase()} to Start
+            `;
             isFocused = true;
             key1Button.blur();
             keySetPrompt.style.display = 'none';
@@ -311,6 +319,9 @@ key2Button.addEventListener("keyup", (e) => {
             key2Button.blur();
             key2 = e.key;
             key2Button.textContent = key2.toUpperCase();
+            guideline1.textContent = `
+                > Press ${key1.toUpperCase()} or ${key2.toUpperCase()} to Start
+            `;
             isFocused = true;
             keySetPrompt.style.display = 'none';
         }
@@ -328,6 +339,7 @@ keyRButton.addEventListener("keyup", (e) => {
         keyRButton.blur();
         keyR = e.key;
         keyRButton.textContent = keyR.toUpperCase();
+        guideline2.textContent = `> Press ${keyR.toUpperCase()} to Reset`;
         isFocused = true;
         keySetPrompt.style.display = 'none';
     }    
@@ -384,4 +396,18 @@ timeInput.addEventListener("keydown", (e) => {
 
 tapsInput.addEventListener("keydown", (e) => {
     checkIncomingInput(e);
+});
+
+// Guidelines
+guideButton.addEventListener("click", () => {
+    if (toggleGuide) {
+        toggleGuide = false;
+        guideButton.textContent = 'Show Guide';
+        guidelines.style.display = 'none';
+    }
+    else {
+        toggleGuide = true;
+        guideButton.textContent = 'Hide Guide';
+        guidelines.style.display = 'block';
+    }
 });

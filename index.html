@@ -8,6 +8,7 @@
     <script src="script.js" defer></script>
 </head>
 <body>
+    <h1 class="settings-box-text">osu! Tapping Benchmark</h1>
     <div class="main-container">
         <div class="settings-box">
             <h1 class="settings-box-heading">Key Settings</h1>
@@ -22,7 +23,9 @@
                     <button class="key-button" id="key-2">X</button>
                 </div>
             </div>
-            <p class="settings-box-text">Reset Key</p>
+            <p class="settings-box-text" style="margin-bottom: 0px;">
+                Reset Key
+            </p>
             <button class="key-button" id="key-r">R</button>
             <p class="settings-box-text" id="key-set-prompt">Press the key you want 
                 to set or click away to not</p>
@@ -59,8 +62,19 @@
                 <p class="settings-box-text">Taps</p>
                 <input placeholder="Taps(Default = 16)" id="taps-box" class="input-box">
             </div>
-            <h1 class="settings-box-text">Progress</h1>
+            <h1 class="settings-box-heading">Progress</h1>
             <h1 class="settings-box-heading" id="progress-bar">0s/0s</h1>
+        </div>
+    </div>
+    <div class="guidlines-container">
+        <button class="settings-box-heading" id="guidelines-button">
+            Hide Guide
+        </button>
+        <div id="guidelines">
+            <p id="guideline-1">> Press Z or X to Start</p>
+            <p id="guideline-2">> Press R to Reset</p>
+            <p>> Make sure to reset after every test</p>
+            <p>> Click on the key buttons to change them</p>
         </div>
     </div>
 </body>
