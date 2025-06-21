@@ -12,6 +12,7 @@ const timeSection = document.querySelector("#time-section");
 const tapsSection = document.querySelector("#taps-section");
 const timeInput = document.querySelector("#time-box");
 const tapsInput = document.querySelector("#taps-box");
+const progressBar = document.querySelector("#progress-bar");
 
 var clicks = 0;
 var BPM = 0;
@@ -30,7 +31,7 @@ var started = false;
 var canEdit = true;
 var isTimeMode = true;
 
-var timeFactor = 5;
+var timeFactor = 10;
 var timeElapsed = 0.0;
 var targetTime = 5 * timeFactor;
 var targetTaps = 16;
@@ -119,7 +120,7 @@ function scaleArray(arr, factor) {
 }
 
 function countTime() {
-    if (timeElapsed == targetTime - 1 && isTimeMode) {
+    if (timeElapsed >= targetTime - 1 && isTimeMode) {
         clearInterval(timer);
         stopped = true;
     }
@@ -150,28 +151,32 @@ function keyTap() {
     lastTime = currentTime;
 }
 
+function isNumericInput(input) {
+    return /^\d+(\.\d+)?$/.test(input);
+}
+
 function start() {
     if (isTimeMode) {
-        if (timeInput.value == '') {
+        if (timeInput.value == '' || !isNumericInput(timeInput.value)) {
             targetTime = 5 * timeFactor;
         }
         else {
-            targetTime = timeInput.value * timeFactor;
+            targetTime = (parseFloat(timeInput.value)).toFixed(1) * timeFactor;
         }
     }
     else {
-        if (tapsInput.value == '') {
+        if (tapsInput.value == '' || !isNumericInput(tapsInput.value)) {
             targetTaps = 16;
         }
         else {
-            targetTaps = tapsInput.value;
+            targetTaps = Math.floor(parseFloat(tapsInput.value));
         }
     }
     if (canEdit) {
         canEdit = false;
     }
     started = true;
-    timer = setInterval(countTime, 200);
+    timer = setInterval(countTime, 100);
 }
 
 function keyButtonClick(e) {
@@ -188,7 +193,13 @@ function checkIncomingInput(e) {
 
     if (e.ctrlKey || e.metaKey) return;
 
-    const isNumber = (e.key >= '0' && e.key <= '9');
+    var isNumber;
+
+    if (isTimeMode) 
+        isNumber = ((e.key >= '0' && e.key <= '9') || e.key == '.');
+    else
+        isNumber = e.key >= '0' && e.key <= '9';
+
     const isAllowed = allowed.includes(e.key);
 
     if (!isNumber && !isAllowed) {
@@ -228,7 +239,12 @@ document.addEventListener("keyup", (e) => {
 });
 
 document.addEventListener("click", (e) => {
-    if (!keySetPrompt.contains(e.target)) {
+    const elements = [key1Button, key2Button, keyRButton, tapsInput, timeInput]
+    if (
+        !keySetPrompt.contains(e.target) && 
+        !elements.includes(e.target) && 
+        !isFocused
+    ) {
         keySetPrompt.style.display = 'none';
         isFocused = true;
     }
@@ -330,15 +346,12 @@ testButtonTaps.addEventListener("click", () => {
 
 // input boxes
 timeInput.addEventListener("click", ()=> {
-    if (document.activeElement == timeInput) {
-        isFocused = false;
-    }
+    isFocused = false;
+    console.log(isFocused);
 });
 
 tapsInput.addEventListener("click", ()=> {
-    if (document.activeElement == tapsInput) {
-        isFocused = false;
-    }
+    isFocused = false;
 });
 
 timeInput.addEventListener("keydown", (e) => {
