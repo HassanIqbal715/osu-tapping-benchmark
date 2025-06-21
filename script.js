@@ -52,6 +52,12 @@ function reset() {
 
     clearInterval(timer);
 
+    if (isTimeMode) {
+        progressBar.textContent = `0s/0s`;
+    }
+    else {
+        progressBar.textContent = `0/0`;
+    }
     totalClicks.textContent = clicks;
     bpmElement.textContent = 0;
     cpsElement.textContent = 0;
@@ -75,7 +81,14 @@ function calculateUR() {
     urElement.textContent = (std * 10).toFixed(2);
 }
 
-calculateUR();
+function calculateInterval() {
+    const currentTime = performance.now();
+    if (lastTime !== null) {
+        var intr = (currentTime - lastTime)/1000;
+        intervals.push(intr);
+    }
+    lastTime = currentTime;
+}
 
 function getArrayAverage(arr) {
     if (arr.length >= 1) {
@@ -119,12 +132,19 @@ function scaleArray(arr, factor) {
     return newArr;
 }
 
+// Called by the timer to check time mode break condition and do calculations
+// for real-time BPM, UR and CPS feedback.
 function countTime() {
     if (timeElapsed >= targetTime - 1 && isTimeMode) {
         clearInterval(timer);
         stopped = true;
     }
     timeElapsed += 1;
+    if (isTimeMode) {
+        progressBar.textContent = `
+            ${timeElapsed/timeFactor}s/${targetTime/timeFactor}s
+        `
+    }
     calculateUR();
     calculateBPM();
     calculateCPS();
@@ -134,21 +154,21 @@ function keyTap() {
     if (!started) {
         start();
     }
-    if (!isTimeMode && clicks == targetTaps - 1) {
-        clearInterval(timer);
-        stopped = true;        
-        calculateUR();
-        calculateBPM();
-        calculateCPS();
-    }
+
     clicks += 1;
     totalClicks.textContent = clicks;
-    const currentTime = performance.now();
-    if (lastTime !== null) {
-        var intr = (currentTime - lastTime)/1000;
-        intervals.push(intr);
+
+    calculateInterval();
+    if (!isTimeMode) {
+        progressBar.textContent = `${clicks}/${targetTaps}`;
+        if(clicks == targetTaps) {
+            clearInterval(timer);
+            stopped = true;
+            calculateUR();
+            calculateBPM();
+            calculateCPS();
+        }
     }
-    lastTime = currentTime;
 }
 
 function isNumericInput(input) {
@@ -163,6 +183,7 @@ function start() {
         else {
             targetTime = (parseFloat(timeInput.value)).toFixed(1) * timeFactor;
         }
+        progressBar.textContent = `0s/${targetTime/timeFactor}s`;
     }
     else {
         if (tapsInput.value == '' || !isNumericInput(tapsInput.value)) {
@@ -171,6 +192,7 @@ function start() {
         else {
             targetTaps = Math.floor(parseFloat(tapsInput.value));
         }
+        progressBar.textContent = `0/${targetTaps}`;
     }
     if (canEdit) {
         canEdit = false;
@@ -326,6 +348,7 @@ testButtonTime.addEventListener("click", () => {
     tapsSection.style.display = 'none';
     testButtonTime.classList.toggle("clicked");
     testButtonTaps.classList.remove("clicked");
+    progressBar.textContent = '0s/0s';
 });
 
 testButtonTaps.addEventListener("click", () => {
@@ -342,6 +365,7 @@ testButtonTaps.addEventListener("click", () => {
     tapsSection.style.display = 'flex';
     testButtonTaps.classList.toggle("clicked");
     testButtonTime.classList.remove("clicked");
+    progressBar.textContent = '0/0';
 });
 
 // input boxes
